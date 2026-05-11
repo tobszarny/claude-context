@@ -38,6 +38,12 @@ Before setting up Claude Context, ensure you have the following requirements met
 - **Docker**: Install Milvus by following [this guide](https://milvus.io/docs/install_standalone-docker-compose.md)
 - **Resources**: More complex configuration required
 
+#### Option 3: PostgreSQL + PGVector
+- **PostgreSQL**: Version 12+ with the [pgvector](https://github.com/pgvector/pgvector) extension installed
+- **Setup**: Install pgvector extension by following [this guide](https://github.com/pgvector/pgvector#installation)
+- **Configuration**: Set `VECTOR_DB_PROVIDER=pgvector` and `PG_CONNECTION_STRING=postgresql://user:pass@localhost:5432/dbname`
+- **Note**: MCP server only; VS Code and Chrome extensions continue using Milvus
+
 ## Development Tools (Optional)
 
 ### For VSCode Extension
