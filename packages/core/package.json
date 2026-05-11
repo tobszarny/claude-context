@@ -32,12 +32,14 @@
         "tree-sitter-rust": "^0.21.0",
         "tree-sitter-typescript": "^0.21.0",
         "tree-sitter-scala": "^0.24.0",
+        "pg": "^8.13.0",
         "typescript": "^5.0.0",
         "voyageai": "^0.0.4"
     },
     "devDependencies": {
         "@types/fs-extra": "^11.0.0",
         "@types/jest": "^30.0.0",
+        "@types/pg": "^8.11.0",
         "@types/mock-fs": "^4.13.4",
         "jest": "^30.0.0",
         "mock-fs": "^5.5.0",
