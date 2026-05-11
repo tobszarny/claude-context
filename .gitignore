@@ -68,3 +68,4 @@ repos
 
 evaluation/retrieval_results*
 .venv/pnpm-workspace.yaml
+/pnpm-workspace.yaml
