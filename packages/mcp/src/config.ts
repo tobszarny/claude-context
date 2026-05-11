@@ -22,6 +22,8 @@ export interface ContextMcpConfig {
     milvusAddress?: string; // Optional, can be auto-resolved from token
     milvusToken?: string;
     collectionNameOverride?: string;
+    vectorDbProvider?: 'milvus' | 'pgvector';
+    pgConnectionString?: string;
 }
 
 // Legacy format (v1) - for backward compatibility
@@ -143,6 +145,7 @@ export function createMcpConfig(): ContextMcpConfig {
     console.log(`[DEBUG]   GEMINI_API_KEY: ${envManager.get('GEMINI_API_KEY') ? 'SET (length: ' + envManager.get('GEMINI_API_KEY')!.length + ')' : 'NOT SET'}`);
     console.log(`[DEBUG]   OPENAI_API_KEY: ${envManager.get('OPENAI_API_KEY') ? 'SET (length: ' + envManager.get('OPENAI_API_KEY')!.length + ')' : 'NOT SET'}`);
     console.log(`[DEBUG]   MILVUS_ADDRESS: ${envManager.get('MILVUS_ADDRESS') || 'NOT SET'}`);
+    console.log(`[DEBUG]   VECTOR_DB_PROVIDER: ${envManager.get('VECTOR_DB_PROVIDER') || 'NOT SET'}`);
     console.log(`[DEBUG]   CODE_CHUNKS_COLLECTION_NAME_OVERRIDE: ${envManager.get('CODE_CHUNKS_COLLECTION_NAME_OVERRIDE') || 'NOT SET'}`);
     console.log(`[DEBUG]   NODE_ENV: ${envManager.get('NODE_ENV') || 'NOT SET'}`);
 
@@ -167,7 +170,9 @@ export function createMcpConfig(): ContextMcpConfig {
         // Vector database configuration - address can be auto-resolved from token
         milvusAddress: envManager.get('MILVUS_ADDRESS'), // Optional, can be resolved from token
         milvusToken: envManager.get('MILVUS_TOKEN'),
-        collectionNameOverride: envManager.get('CODE_CHUNKS_COLLECTION_NAME_OVERRIDE')
+        collectionNameOverride: envManager.get('CODE_CHUNKS_COLLECTION_NAME_OVERRIDE'),
+        vectorDbProvider: (envManager.get('VECTOR_DB_PROVIDER') as 'milvus' | 'pgvector') || 'milvus',
+        pgConnectionString: envManager.get('PG_CONNECTION_STRING'),
     };
 
     return config;
@@ -181,6 +186,10 @@ export function logConfigurationSummary(config: ContextMcpConfig): void {
     console.log(`[MCP]   Embedding Provider: ${config.embeddingProvider}`);
     console.log(`[MCP]   Embedding Model: ${config.embeddingModel}`);
     console.log(`[MCP]   Milvus Address: ${config.milvusAddress || (config.milvusToken ? '[Auto-resolve from token]' : '[Not configured]')}`);
+    console.log(`[MCP]   Vector DB Provider: ${config.vectorDbProvider || 'milvus'}`);
+    if (config.vectorDbProvider === 'pgvector') {
+        console.log(`[MCP]   PG Connection String: ${config.pgConnectionString ? '✅ Configured' : '❌ Missing'}`);
+    }
     if (config.collectionNameOverride) {
         console.log(`[MCP]   Collection Name Override: ✅ Configured`);
     }
@@ -256,6 +265,8 @@ Environment Variables:
                           after sanitization (letters/digits/underscore, 255 chars max).
                           The per-codebase pathHash is preserved so multiple
                           codebases stay distinct under the same override.
+  VECTOR_DB_PROVIDER      Vector database provider: milvus (default) or pgvector
+  PG_CONNECTION_STRING    PostgreSQL connection string (required when VECTOR_DB_PROVIDER=pgvector)
 
   MCP Sync Configuration:
   CLAUDE_CONTEXT_BACKGROUND_SYNC
@@ -300,5 +311,8 @@ Examples:
 
   # Start MCP server with background sync enabled every minute
   OPENAI_API_KEY=sk-xxx MILVUS_TOKEN=your-token CLAUDE_CONTEXT_BACKGROUND_SYNC=true CLAUDE_CONTEXT_SYNC_INTERVAL_MS=60000 npx @zilliz/claude-context-mcp@latest
+
+  # Start MCP server with PGVector
+  OPENAI_API_KEY=sk-xxx VECTOR_DB_PROVIDER=pgvector PG_CONNECTION_STRING=postgresql://user:pass@localhost:5432/dbname npx @zilliz/claude-context-mcp@latest
         `);
 }
