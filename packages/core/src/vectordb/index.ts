@@ -23,4 +23,6 @@ export {
     CreateFreeClusterResponse,
     CreateFreeClusterWithDetailsResponse,
     DescribeClusterResponse
-} from './zilliz-utils'; 
+} from './zilliz-utils';
+
+export { PgvectorDatabase, PgvectorConfig } from './pgvector-vectordb'; 
